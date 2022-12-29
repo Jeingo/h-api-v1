@@ -1,23 +1,23 @@
 export type QueryBlogs = {
-    searchNameTerm: string | null
+    searchNameTerm?: string
     sortBy: string
     sortDirection: 'asc' | 'desc'
-    pageNumber: number
-    pageSize: number
+    pageNumber: string
+    pageSize: string
 }
 
 export type QueryPosts = {
     sortBy: string
     sortDirection: 'asc' | 'desc'
-    pageNumber: number
-    pageSize: number
+    pageNumber: string
+    pageSize: string
 }
 
 export type QueryUsers = {
-    searchLoginTerm: string | null
-    searchEmailTerm: string | null
+    searchLoginTerm?: string
+    searchEmailTerm?: string
     sortBy: string
     sortDirection: 'asc' | 'desc'
-    pageNumber: number
-    pageSize: number
+    pageNumber: string
+    pageSize: string
 }

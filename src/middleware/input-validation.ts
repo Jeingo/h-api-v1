@@ -1,4 +1,4 @@
-import {query, validationResult} from "express-validator"
+import {validationResult} from "express-validator"
 import {NextFunction, Request, Response} from "express"
 import {ObjectId} from "mongodb";
 import {HTTP_STATUSES} from "../constats/status";
@@ -21,7 +21,7 @@ export const inputValidation = (req: Request, res: Response, next: NextFunction)
     }
 }
 
-export const idValidation = async (req: Request<any,any,any,any>, res: Response, next: NextFunction) => {
+export const idValidation = async (req: Request, res: Response, next: NextFunction) => {
     if(!ObjectId.isValid(req.params.id)) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
@@ -29,13 +29,13 @@ export const idValidation = async (req: Request<any,any,any,any>, res: Response,
     next()
 }
 
-export const queryValidation = async (req: Request<any,any,any,any>, res: Response, next: NextFunction) => {
+export const queryValidation = async (req: Request, res: Response, next: NextFunction) => {
     let {pageNumber = 1, pageSize = 10} = req.query
     if(!Number(pageNumber)) {
-        req.query.pageNumber = 1
+        req.query.pageNumber = '1'
     }
     if(!Number(pageSize)) {
-        req.query.pageSize = 10
+        req.query.pageSize = '10'
     }
     next()
 }
