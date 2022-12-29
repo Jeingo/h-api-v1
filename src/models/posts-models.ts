@@ -1,3 +1,5 @@
+import {ObjectId} from "mongodb";
+
 export type PostsTypeOutput = {
     id: string
     title: string
@@ -28,6 +30,10 @@ export type PostsTypeToDB = {
     blogId: string
     blogName: string
     createdAt: string
+}
+
+export type PostsTypeInDB = {
+    _id?: ObjectId
 }
 
 export type PostsIdParams = {
