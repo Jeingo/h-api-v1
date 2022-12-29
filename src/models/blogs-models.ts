@@ -1,5 +1,3 @@
-import {ObjectId} from "mongodb";
-
 export type BlogsTypeOutput = {
     id: string
     name: string
@@ -19,10 +17,6 @@ export type BlogsTypeToDB = {
     description: string
     websiteUrl: string
     createdAt: string
-}
-
-export type BlogsTypeInDB = {
-    _id?: ObjectId
 }
 
 export type BlogsIdParams = {
