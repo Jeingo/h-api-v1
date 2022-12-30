@@ -14,8 +14,8 @@ const getOutputBlog = (user: any): LoginTypeForAuth => {
 }
 
 export const usersService = {
-    async getUserById(id: ObjectId): Promise<LoginTypeForAuth | null> {
-        const res = await usersCollection.findOne({id})
+    async getUserById(_id: ObjectId): Promise<LoginTypeForAuth | null> {
+        const res = await usersCollection.findOne({_id})
 
         if(res) {
             return getOutputBlog(res)
