@@ -1,3 +1,5 @@
+import {ObjectId} from "mongodb";
+
 export type UsersTypeOutput = {
     id: string
     login: string
@@ -16,6 +18,10 @@ export type UsersTypeToDB = {
     hash: string
     email: string
     createdAt: string
+}
+
+export type UsersIdInDB = {
+    _id: ObjectId
 }
 
 export type UsersIdParams = {

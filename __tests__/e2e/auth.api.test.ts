@@ -59,10 +59,10 @@ describe('/auth/login', () => {
             .send(correctBadLogin)
             .expect(HTTP_STATUSES.UNAUTHORIZED_401)
     })
-    it('POST /auth/login: should return 204 if the password or login is correct', async () => {
+    it('POST /auth/login: should return 200 if the password or login is correct', async () => {
         await request(app)
             .post('/auth/login')
             .send(correctLogin)
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(HTTP_STATUSES.OK_200)
     })
 })

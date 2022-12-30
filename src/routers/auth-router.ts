@@ -1,4 +1,4 @@
-import {Router, Response} from "express";
+import {Router, Response, Request} from "express";
 import {
     loginOrEmailValidation,
     passwordFromAuthValidation
@@ -9,6 +9,7 @@ import {LoginTypeInput} from "../models/auth-models";
 import {HTTP_STATUSES} from "../constats/status";
 import {authService} from "../domain/auth-service";
 import {jwtService} from "../application/jwt-service";
+import {bearerAuth} from "../authorization/bearer-auth";
 
 export const authRouter = Router({})
 
@@ -25,4 +26,10 @@ authRouter.post('/login',
         return
     }
     res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
+})
+
+authRouter.get('/me',
+    bearerAuth,
+    async (req: Request, res: Response) => {
+    res.status(HTTP_STATUSES.OK_200).json(req.user)
 })
