@@ -1,9 +1,7 @@
 import {MongoClient} from "mongodb"
-import * as dotenv from 'dotenv'
+import {settings} from "../settings/settings";
 
-dotenv.config()
-
-const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017'
+const mongoUrl = settings.MONGO_URL
 
 export const client = new MongoClient(mongoUrl)
 

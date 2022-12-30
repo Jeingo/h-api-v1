@@ -1,5 +1,10 @@
 import {runDb} from "./repositories/db"
-import {app, PORT} from "./app"
+import {app} from "./app"
+import {settings} from "./settings/settings";
+import * as dotenv from "dotenv";
+dotenv.config()
+
+const PORT = settings.PORT
 
 const startApp = async () => {
     await runDb()
