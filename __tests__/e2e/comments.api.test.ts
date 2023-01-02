@@ -1,9 +1,10 @@
 import request from 'supertest'
 import {app} from '../../src/app'
 import {HTTP_STATUSES} from '../../src/constats/status'
-import {CommentsTypeInput} from "../../src/models/comments-models";
+import {CommentsTypeInput, CommentsTypeOutput} from "../../src/models/comments-models";
 import {PostsTypeInput} from "../../src/models/posts-models";
 import {BlogsTypeInput} from "../../src/models/blogs-models";
+import {PaginatedType} from "../../src/models/main-models";
 
 const correctBlog: BlogsTypeInput = {
     name: 'Name',
@@ -52,10 +53,19 @@ const inCorrectCommentNew: CommentsTypeInput = {
     content: "incorrect content"
 }
 
+const emptyComments: PaginatedType<CommentsTypeOutput> = {
+    "pagesCount": 0,
+    "page": 1,
+    "pageSize": 10,
+    "totalCount": 0,
+    "items": []
+}
+
 
 let createdComment: any = null
 let createdUser: any = null
 let createdToken: any = null
+let createdPost: any = null
 describe('/comments', () => {
     beforeAll(async () => {
         await request(app).delete('/testing/all-data')
@@ -71,7 +81,7 @@ describe('/comments', () => {
             .auth('admin', 'qwerty')
             .send(correctPost)
             .expect(HTTP_STATUSES.CREATED_201)
-        const createdPost = createdResponsePost.body
+        createdPost = createdResponsePost.body
         const createdResponseUser = await request(app)
             .post('/users')
             .auth('admin', 'qwerty')
@@ -165,5 +175,31 @@ describe('/comments', () => {
             userLogin: createdUser.login,
             createdAt: expect.any(String)
         })
+    })
+    it(`DELETE /comments/id: shouldn't delete blog without authorization`, async () => {
+        await request(app)
+            .delete('/comments' + '/' + createdComment.id)
+            .expect(HTTP_STATUSES.UNAUTHORIZED_401)
+    })
+    it(`DELETE /comments/bad-id: should return 404 for not existing comment`, async () => {
+        await request(app)
+            .delete('/comments/999')
+            .set('Authorization', 'Bearer ' + createdToken.accessToken)
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+    it(`DELETE /comments/id: should return 403 with incorrect token`, async () => {
+        await request(app)
+            .delete('/comments' + '/' + createdComment.id)
+            .set('Authorization', 'Bearer ' + createdToken2.accessToken)
+            .expect(HTTP_STATUSES.FORBIDDEN_403)
+    })
+    it(`DELETE /comments/id: should delete comment with correct data`, async () => {
+        await request(app)
+            .delete('/comments' + '/' + createdComment.id)
+            .set('Authorization', 'Bearer ' + createdToken.accessToken)
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+        await request(app)
+            .get('/posts' + '/' + createdPost.id + '/comments')
+            .expect(HTTP_STATUSES.OK_200, emptyComments)
     })
 })
