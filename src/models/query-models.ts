@@ -21,3 +21,10 @@ export type QueryUsers = {
     pageNumber: string
     pageSize: string
 }
+
+export type QueryComments = {
+    sortBy: string
+    sortDirection: 'asc' | 'desc'
+    pageNumber: string
+    pageSize: string
+}
