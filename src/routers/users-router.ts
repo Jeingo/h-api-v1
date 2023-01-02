@@ -12,16 +12,17 @@ import {usersService} from "../domain/users-service";
 
 export const usersRouter = Router({})
 
-usersRouter.use(auth)
-
 usersRouter.get('/',
+    auth,
     queryValidation,
-    async (req: RequestWithQuery<QueryUsers>, res: Response<PaginatedType<UsersTypeOutput>> ) => {
+    async (req: RequestWithQuery<QueryUsers>,
+           res: Response<PaginatedType<UsersTypeOutput>> ) => {
     const allUsers = await usersQueryRepository.getAllUsers(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allUsers)
     })
 
 usersRouter.post('/',
+    auth,
     loginValidation,
     passwordValidation,
     emailValidation,
@@ -33,6 +34,7 @@ usersRouter.post('/',
 })
 
 usersRouter.delete('/:id',
+    auth,
     idValidation,
     async (req: RequestWithParams<UsersIdParams>, res: Response) => {
         const deletedUser = await usersService.deleteUser(req.params.id)

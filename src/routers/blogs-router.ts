@@ -29,14 +29,16 @@ export const blogsRouter = Router({})
 
 blogsRouter.get('/',
     queryValidation,
-    async (req: RequestWithQuery<QueryBlogs>, res: Response<PaginatedType<BlogsTypeOutput>>) => {
+    async (req: RequestWithQuery<QueryBlogs>,
+           res: Response<PaginatedType<BlogsTypeOutput>>) => {
     const allBlogs = await blogsQueryRepository.getAllBlogs(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allBlogs)
 })
 
 blogsRouter.get('/:id',
     idValidation,
-    async (req: RequestWithParams<BlogsIdParams>, res: Response<BlogsTypeOutput>) => {
+    async (req: RequestWithParams<BlogsIdParams>,
+           res: Response<BlogsTypeOutput>) => {
     const foundBlog = await blogsService.getBlogById(req.params.id)
 
     if (!foundBlog) {
@@ -49,7 +51,8 @@ blogsRouter.get('/:id',
 blogsRouter.get('/:id/posts',
     idValidation,
     queryValidation,
-    async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>, res: Response<PaginatedType<PostsTypeOutput> | null>) => {
+    async (req: RequestWithParamsAndQuery<PostsIdParams, QueryBlogs>,
+           res: Response<PaginatedType<PostsTypeOutput> | null>) => {
         const foundPosts = await postsQueryRepository.getPostsById(req.params.id, req.query)
 
         if (!foundPosts) {
@@ -60,9 +63,8 @@ blogsRouter.get('/:id/posts',
         res.json(foundPosts)
     })
 
-blogsRouter.use(auth)
-
 blogsRouter.post('/',
+    auth,
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
@@ -74,6 +76,7 @@ blogsRouter.post('/',
     })
 
 blogsRouter.post('/:id/posts',
+    auth,
     idValidation,
     titleValidation,
     shortDescriptionValidation,
@@ -92,6 +95,7 @@ blogsRouter.post('/:id/posts',
     })
 
 blogsRouter.put('/:id',
+    auth,
     idValidation,
     nameValidation,
     descriptionValidation,
@@ -110,6 +114,7 @@ blogsRouter.put('/:id',
     })
 
 blogsRouter.delete('/:id',
+    auth,
     idValidation,
     async (req: RequestWithParams<BlogsIdParams>, res: Response) => {
     const deletedBlog = await blogsService.deleteBlog(req.params.id)

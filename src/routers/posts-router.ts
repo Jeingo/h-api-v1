@@ -27,7 +27,7 @@ postsRouter.get('/:id',
     idValidation,
     queryValidation,
     async (req: RequestWithParams<PostsIdParams>,
-                                            res: Response<PostsTypeOutput>) => {
+           res: Response<PostsTypeOutput>) => {
     const foundPost = await postsService.getPostById(req.params.id)
 
     if(!foundPost) {
@@ -37,9 +37,8 @@ postsRouter.get('/:id',
     res.json(foundPost)
 })
 
-postsRouter.use(auth)
-
 postsRouter.post('/',
+    auth,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
@@ -52,6 +51,7 @@ postsRouter.post('/',
 })
 
 postsRouter.put('/:id',
+    auth,
     idValidation,
     titleValidation,
     shortDescriptionValidation,
@@ -71,6 +71,7 @@ postsRouter.put('/:id',
 })
 
 postsRouter.delete('/:id',
+    auth,
     idValidation,
     async (req: RequestWithParams<PostsIdParams>, res: Response) => {
     const deletedPost = await postsService.deletePost(req.params.id)
