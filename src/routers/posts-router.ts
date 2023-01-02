@@ -1,4 +1,4 @@
-import {Router, Response, Request} from 'express'
+import {Router, Response} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
 import {postsService} from "../domain/posts-service"
 import {idValidation, inputValidation, queryValidation} from "../middleware/input-validation"
@@ -21,7 +21,8 @@ import {postsQueryRepository} from "../query-reositories/posts-query-repository"
 import {QueryComments, QueryPosts} from "../models/query-models";
 import {PaginatedType} from "../models/main-models";
 import {bearerAuth} from "../authorization/bearer-auth";
-import {CommentsIdParams, CommentsTypeInputInPost, CommentsTypeOutput} from "../models/comments-models";
+import {CommentsIdParams, CommentsTypeInputInPost, CommentsTypeOutput} from "../models/comments-models"
+import {contentInCommentValidation} from "../middleware/input-comments-validation";
 import {commentsService} from "../domain/comments-service";
 import {commentsQueryRepository} from "../query-reositories/comments-query-repository";
 
@@ -79,7 +80,7 @@ postsRouter.post('/',
 postsRouter.post('/:id/comments',
     bearerAuth,
     idValidation,
-    contentValidation,
+    contentInCommentValidation,
     inputValidation,
     async (req: RequestWithParamsAndBody<CommentsIdParams, CommentsTypeInputInPost>,
            res: Response<CommentsTypeOutput>) => {

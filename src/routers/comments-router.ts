@@ -1,11 +1,11 @@
 import {Router, Response} from "express";
 import {bearerAuth} from "../authorization/bearer-auth";
 import {idValidation, inputValidation} from "../middleware/input-validation";
-import {contentValidation} from "../middleware/input-posts-validation";
 import {RequestWithParams, RequestWithParamsAndBody} from "../models/types";
 import {CommentsIdParams, CommentsTypeInput, CommentsTypeOutput} from "../models/comments-models";
 import {commentsService} from "../domain/comments-service";
 import {HTTP_STATUSES} from "../constats/status";
+import {contentInCommentValidation} from "../middleware/input-comments-validation";
 
 export const commentsRouter = Router({})
 
@@ -25,7 +25,7 @@ commentsRouter.get('/:id',
 commentsRouter.put('/:id',
     bearerAuth,
     idValidation,
-    contentValidation,
+    contentInCommentValidation,
     inputValidation,
     async (req: RequestWithParamsAndBody<CommentsIdParams, CommentsTypeInput>,
            res: Response) => {
