@@ -24,18 +24,38 @@ const correctUser = {
     email: 'email@gmail.com'
 }
 
+const correctUser2 = {
+    login: 'login2',
+    password: 'password2',
+    email: 'email@gmail.com'
+}
+
 const correctLogin = {
     loginOrEmail: 'login',
     password: 'password'
+}
+
+const correctLogin2 = {
+    loginOrEmail: 'login2',
+    password: 'password2'
 }
 
 const correctComment: CommentsTypeInput = {
     content: "content content content content more 20"
 }
 
+const correctCommentNew: CommentsTypeInput = {
+    content: "content content content content more 20 NEW"
+}
+
+const inCorrectCommentNew: CommentsTypeInput = {
+    content: "incorrect content"
+}
+
 
 let createdComment: any = null
 let createdUser: any = null
+let createdToken: any = null
 describe('/comments', () => {
     beforeAll(async () => {
         await request(app).delete('/testing/all-data')
@@ -62,7 +82,7 @@ describe('/comments', () => {
             .post('/auth/login')
             .send(correctLogin)
             .expect(HTTP_STATUSES.OK_200)
-        const createdToken = createdResponseToken.body
+        createdToken = createdResponseToken.body
         const createdResponseComment = await request(app)
             .post('/posts' + '/' +createdPost.id + '/comments')
             .set('Authorization', 'Bearer ' + createdToken.accessToken)
@@ -82,6 +102,65 @@ describe('/comments', () => {
         expect(response.body).toEqual({
             id: expect.any(String),
             ...correctComment,
+            userId: createdUser.id,
+            userLogin: createdUser.login,
+            createdAt: expect.any(String)
+        })
+    })
+    it(`PUT /comments/id: shouldn't update comment without authorization`, async () => {
+        await request(app)
+            .put('/comments' + '/' + createdComment.id)
+            .send(correctCommentNew)
+            .expect(HTTP_STATUSES.UNAUTHORIZED_401)
+    })
+    it(`PUT /comments/id: shouldn't update comment with incorrect data`, async () => {
+        await request(app)
+            .put('/comments' + '/' + createdComment.id)
+            .set('Authorization', 'Bearer ' + createdToken.accessToken)
+            .send(inCorrectCommentNew)
+            .expect(HTTP_STATUSES.BAD_REQUEST_400)
+    })
+    it(`PUT /comments/bad-id: should return 404 for not existing comment`, async () => {
+        await request(app)
+            .put('/comments/999')
+            .set('Authorization', 'Bearer ' + createdToken.accessToken)
+            .send(correctCommentNew)
+            .expect(HTTP_STATUSES.NOT_FOUND_404)
+    })
+
+    let createdUser2: any = null
+    let createdToken2: any = null
+
+    it(`PUT /comments/id: should return 403 with incorrect token`, async () => {
+        const createdResponseUser = await request(app)
+            .post('/users')
+            .auth('admin', 'qwerty')
+            .send(correctUser2)
+            .expect(HTTP_STATUSES.CREATED_201)
+        createdUser2 = createdResponseUser.body
+        const createdResponseToken = await request(app)
+            .post('/auth/login')
+            .send(correctLogin2)
+            .expect(HTTP_STATUSES.OK_200)
+        createdToken2 = createdResponseToken.body
+        await request(app)
+            .put('/comments' + '/' + createdComment.id)
+            .set('Authorization', 'Bearer ' + createdToken2.accessToken)
+            .send(correctCommentNew)
+            .expect(HTTP_STATUSES.FORBIDDEN_403)
+    })
+    it(`PUT /comments/id: should update comment with correct data`, async () => {
+        await request(app)
+            .put('/comments' + '/' + createdComment.id)
+            .set('Authorization', 'Bearer ' + createdToken.accessToken)
+            .send(correctCommentNew)
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
+        const response = await request(app)
+            .get('/comments' + '/' + createdComment.id)
+            .expect(HTTP_STATUSES.OK_200)
+        expect(response.body).toEqual({
+            id: expect.any(String),
+            ...correctCommentNew,
             userId: createdUser.id,
             userLogin: createdUser.login,
             createdAt: expect.any(String)
