@@ -6,6 +6,7 @@ import {RequestWithParams, RequestWithParamsAndBody} from "../models/types";
 import {CommentsIdParams, CommentsTypeInput, CommentsTypeOutput} from "../models/comments-models";
 import {commentsService} from "../domain/comments-service";
 import {HTTP_STATUSES} from "../constats/status";
+import {commentsCollection} from "../repositories/db";
 
 export const commentsRouter = Router({})
 
@@ -36,4 +37,17 @@ commentsRouter.delete('/:id',
     idValidation,
     async (req: RequestWithParams<CommentsIdParams>,
            res: Response) => {
+    const deletedComment = await commentsService.deleteComment(req.params.id, req.user!)
+
+        if (deletedComment === HTTP_STATUSES.NOT_FOUND_404) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            return
+        }
+
+        if (deletedComment === HTTP_STATUSES.FORBIDDEN_403) {
+            res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
+            return
+        }
+
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
