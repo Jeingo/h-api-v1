@@ -17,5 +17,8 @@ export const commentsService = {
             postId: postId
         }
         return await commentsRepository.createComment(createdComment)
+    },
+    async getCommentById(id: string): Promise<CommentsTypeOutput | null> {
+        return await commentsRepository.getCommentById(id)
     }
 }

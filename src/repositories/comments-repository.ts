@@ -1,5 +1,16 @@
 import {CommentsTypeOutput, CommentsTypeToDB} from "../models/comments-models";
 import {commentsCollection} from "./db";
+import {ObjectId} from "mongodb";
+
+const getOutputComment = (comment: any): CommentsTypeOutput => {
+    return {
+        id: comment._id.toString(),
+        content: comment.content,
+        userId: comment.userId,
+        userLogin: comment.userLogin,
+        createdAt: comment.createdAt
+    }
+}
 
 export const commentsRepository = {
     async createComment(createdComment: CommentsTypeToDB): Promise<CommentsTypeOutput> {
@@ -11,5 +22,14 @@ export const commentsRepository = {
             userLogin: createdComment.userLogin,
             createdAt: createdComment.createdAt
         }
+    },
+    async getCommentById(id: string): Promise<CommentsTypeOutput | null> {
+        const res = await commentsCollection.findOne({_id: new ObjectId(id)})
+
+        if(!res) {
+            return null
+        }
+
+        return getOutputComment(res)
     }
 }
