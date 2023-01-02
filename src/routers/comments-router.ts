@@ -1,4 +1,4 @@
-import {Router, Request, Response} from "express";
+import {Router, Response} from "express";
 import {bearerAuth} from "../authorization/bearer-auth";
 import {idValidation, inputValidation} from "../middleware/input-validation";
 import {contentValidation} from "../middleware/input-posts-validation";
@@ -6,7 +6,6 @@ import {RequestWithParams, RequestWithParamsAndBody} from "../models/types";
 import {CommentsIdParams, CommentsTypeInput, CommentsTypeOutput} from "../models/comments-models";
 import {commentsService} from "../domain/comments-service";
 import {HTTP_STATUSES} from "../constats/status";
-import {commentsCollection} from "../repositories/db";
 
 export const commentsRouter = Router({})
 
@@ -30,6 +29,19 @@ commentsRouter.put('/:id',
     inputValidation,
     async (req: RequestWithParamsAndBody<CommentsIdParams, CommentsTypeInput>,
            res: Response) => {
+    const updatedComment = await commentsService.updateComment(req.params.id, req.body.content, req.user!)
+
+        if (updatedComment === HTTP_STATUSES.NOT_FOUND_404) {
+            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+            return
+        }
+
+        if (updatedComment === HTTP_STATUSES.FORBIDDEN_403) {
+            res.sendStatus(HTTP_STATUSES.FORBIDDEN_403)
+            return
+        }
+
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
 
 commentsRouter.delete('/:id',

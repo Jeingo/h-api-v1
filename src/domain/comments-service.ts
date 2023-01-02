@@ -22,6 +22,19 @@ export const commentsService = {
     async getCommentById(id: string): Promise<CommentsTypeOutput | null> {
         return await commentsRepository.getCommentById(id)
     },
+    async updateComment(id: string, content: string,  user: LoginTypeForAuth): Promise<boolean | number> {
+        const comment = await commentsRepository.getCommentById(id)
+
+        if(!comment) {
+            return HTTP_STATUSES.NOT_FOUND_404
+        }
+
+        if(comment.userId !== user.userId) {
+            return HTTP_STATUSES.FORBIDDEN_403
+        }
+
+        return await commentsRepository.updateComment(id, content)
+    },
     async deleteComment(id: string, user: LoginTypeForAuth): Promise<boolean | number> {
         const comment = await commentsRepository.getCommentById(id)
 
