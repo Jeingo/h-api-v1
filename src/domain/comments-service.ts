@@ -13,7 +13,8 @@ export const commentsService = {
             content: content,
             userId: user.userId,
             userLogin: user.login,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            postId: postId
         }
         return await commentsRepository.createComment(createdComment)
     }

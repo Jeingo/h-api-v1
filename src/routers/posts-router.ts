@@ -10,13 +10,20 @@ import {
 } from "../middleware/input-posts-validation"
 import {auth} from "../authorization/basic-auth"
 import {PostsIdParams, PostsTypeInput, PostsTypeOutput} from "../models/posts-models"
-import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../models/types"
+import {
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithParamsAndQuery,
+    RequestWithQuery
+} from "../models/types"
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
 import {QueryComments, QueryPosts} from "../models/query-models";
 import {PaginatedType} from "../models/main-models";
 import {bearerAuth} from "../authorization/bearer-auth";
 import {CommentsIdParams, CommentsTypeInputInPost, CommentsTypeOutput} from "../models/comments-models";
 import {commentsService} from "../domain/comments-service";
+import {commentsQueryRepository} from "../query-reositories/comments-query-repository";
 
 export const postsRouter = Router({})
 
@@ -44,8 +51,17 @@ postsRouter.get('/:id',
 postsRouter.get('/:id/comments',
     idValidation,
     queryValidation,
-    async (req: RequestWithQuery<QueryComments>,
-           res: Response<PaginatedType<CommentsTypeOutput>>) => {})
+    async (req: RequestWithParamsAndQuery<CommentsIdParams, QueryComments>,
+           res: Response<PaginatedType<CommentsTypeOutput | null>>) => {
+    const foundComments = await commentsQueryRepository.getCommentsById(req.params.id, req.query)
+
+    if(!foundComments) {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        return
+    }
+
+    res.json(foundComments)
+    })
 
 postsRouter.post('/',
     auth,
