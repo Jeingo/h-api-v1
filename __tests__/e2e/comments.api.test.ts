@@ -202,4 +202,5 @@ describe('/comments', () => {
             .get('/posts' + '/' + createdPost.id + '/comments')
             .expect(HTTP_STATUSES.OK_200, emptyComments)
     })
+
 })
