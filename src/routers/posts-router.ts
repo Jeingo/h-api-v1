@@ -1,4 +1,4 @@
-import {Router, Response} from 'express'
+import {Router, Response, Request} from 'express'
 import {HTTP_STATUSES} from "../constats/status"
 import {postsService} from "../domain/posts-service"
 import {idValidation, inputValidation, queryValidation} from "../middleware/input-validation"
@@ -12,20 +12,23 @@ import {auth} from "../authorization/basic-auth"
 import {PostsIdParams, PostsTypeInput, PostsTypeOutput} from "../models/posts-models"
 import {RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery} from "../models/types"
 import {postsQueryRepository} from "../query-reositories/posts-query-repository";
-import {QueryPosts} from "../models/query-models";
+import {QueryComments, QueryPosts} from "../models/query-models";
 import {PaginatedType} from "../models/main-models";
+import {bearerAuth} from "../authorization/bearer-auth";
+import {CommentsIdParams, CommentsTypeInputInPost, CommentsTypeOutput} from "../models/comments-models";
 
 export const postsRouter = Router({})
 
-postsRouter.get('/', async (req: RequestWithQuery<QueryPosts>,
-                                         res: Response<PaginatedType<PostsTypeOutput>>) => {
+postsRouter.get('/',
+    queryValidation ,
+    async (req: RequestWithQuery<QueryPosts>,
+           res: Response<PaginatedType<PostsTypeOutput>>) => {
     const allPosts = await postsQueryRepository.getAllPost(req.query)
     res.status(HTTP_STATUSES.OK_200).json(allPosts)
 })
 
 postsRouter.get('/:id',
     idValidation,
-    queryValidation,
     async (req: RequestWithParams<PostsIdParams>,
            res: Response<PostsTypeOutput>) => {
     const foundPost = await postsService.getPostById(req.params.id)
@@ -36,6 +39,12 @@ postsRouter.get('/:id',
     }
     res.json(foundPost)
 })
+
+postsRouter.get('/:id/comments',
+    idValidation,
+    queryValidation,
+    async (req: RequestWithQuery<QueryComments>,
+           res: Response<PaginatedType<CommentsTypeOutput>>) => {})
 
 postsRouter.post('/',
     auth,
@@ -49,6 +58,14 @@ postsRouter.post('/',
     const createdPost = await postsService.createPost(req.body.title, req.body.shortDescription, req.body.content, req.body.blogId)
     res.status(HTTP_STATUSES.CREATED_201).json(createdPost)
 })
+
+postsRouter.post('/:id/comments',
+    bearerAuth,
+    idValidation,
+    contentValidation,
+    inputValidation,
+    async (req: RequestWithParamsAndBody<CommentsIdParams, CommentsTypeInputInPost>,
+           res: Response<CommentsTypeOutput>) => {})
 
 postsRouter.put('/:id',
     auth,
