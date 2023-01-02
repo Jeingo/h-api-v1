@@ -84,7 +84,6 @@ postsRouter.post('/:id/comments',
     inputValidation,
     async (req: RequestWithParamsAndBody<CommentsIdParams, CommentsTypeInputInPost>,
            res: Response<CommentsTypeOutput>) => {
-    console.log(req.user)
     const createdComment = await commentsService.createComment(req.body.content, req.params.id, req.user!)
 
     if(!createdComment) {
