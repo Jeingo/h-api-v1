@@ -19,3 +19,5 @@ const db = client.db('service')
 export const blogsCollection = db.collection('blogs')
 export const postsCollection = db.collection('posts')
 export const usersCollection = db.collection('users')
+export const commentsCollection = db.collection('comments')
+
