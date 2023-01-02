@@ -5,11 +5,11 @@ import {usersCollection} from "../repositories/db";
 import {ObjectId} from "mongodb";
 import {LoginTypeForAuth} from "../models/auth-models";
 
-const getOutputBlog = (user: any): LoginTypeForAuth => {
+const getOutputUser = (user: any): LoginTypeForAuth => {
     return {
         email: user.email,
         login: user.login,
-        userId: user._id
+        userId: user._id.toString()
     }
 }
 
@@ -18,7 +18,7 @@ export const usersService = {
         const res = await usersCollection.findOne({_id})
 
         if(res) {
-            return getOutputBlog(res)
+            return getOutputUser(res)
         }
         return null
     },

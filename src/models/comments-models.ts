@@ -10,6 +10,13 @@ export type CommentsTypeInput = {
     content: string
 }
 
+export type CommentsTypeToDB = {
+    content: string,
+    userId: string,
+    userLogin: string,
+    createdAt: string
+}
+
 export type CommentsTypeInputInPost = {
     content: string
 }

@@ -16,6 +16,7 @@ import {QueryComments, QueryPosts} from "../models/query-models";
 import {PaginatedType} from "../models/main-models";
 import {bearerAuth} from "../authorization/bearer-auth";
 import {CommentsIdParams, CommentsTypeInputInPost, CommentsTypeOutput} from "../models/comments-models";
+import {commentsService} from "../domain/comments-service";
 
 export const postsRouter = Router({})
 
@@ -65,7 +66,17 @@ postsRouter.post('/:id/comments',
     contentValidation,
     inputValidation,
     async (req: RequestWithParamsAndBody<CommentsIdParams, CommentsTypeInputInPost>,
-           res: Response<CommentsTypeOutput>) => {})
+           res: Response<CommentsTypeOutput>) => {
+    console.log(req.user)
+    const createdComment = await commentsService.createComment(req.body.content, req.params.id, req.user!)
+
+    if(!createdComment) {
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        return
+    }
+
+    res.status(HTTP_STATUSES.CREATED_201).json(createdComment)
+    })
 
 postsRouter.put('/:id',
     auth,
