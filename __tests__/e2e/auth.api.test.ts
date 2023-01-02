@@ -59,10 +59,33 @@ describe('/auth/login', () => {
             .send(correctBadLogin)
             .expect(HTTP_STATUSES.UNAUTHORIZED_401)
     })
+    let createdToken: any = null
     it('POST /auth/login: should return 200 if the password or login is correct', async () => {
-        await request(app)
+        const createdResponse = await request(app)
             .post('/auth/login')
             .send(correctLogin)
             .expect(HTTP_STATUSES.OK_200)
+        createdToken = createdResponse.body
+        expect(createdToken).toEqual({
+            accessToken: expect.any(String)
+        })
+    })
+    it('GET /auth/me: should return 401 if token is wrong', async () => {
+        await request(app)
+            .get('/auth/me')
+            .expect(HTTP_STATUSES.UNAUTHORIZED_401)
+    })
+    let gotRegistrationUser: any = null
+    it('GET /auth/me: should return 200', async () => {
+        const createdResponse = await request(app)
+            .get('/auth/me')
+            .set('Authorization', 'Bearer ' + createdToken.accessToken)
+            .expect(HTTP_STATUSES.OK_200)
+        gotRegistrationUser = createdResponse.body
+        expect(gotRegistrationUser).toEqual({
+            email: createdUser.email,
+            login: createdUser.login,
+            userId: createdUser.id
+        })
     })
 })
