@@ -21,6 +21,14 @@ const checkEmail = async (email: string ) => {
     return true
 }
 
+const checkLogin = async (login: string ) => {
+    const foundLogin = await usersCollection.findOne({login: login})
+    if(foundLogin) {
+        throw new Error('Email is already exist')
+    }
+    return true
+}
+
 const checkCode = async (code: string) => {
     const foundUser = await authRepository.findByCode(code)
     if(!foundUser) {
@@ -51,6 +59,7 @@ export const loginRegistrationValidation = body('login').trim()
     .isString().withMessage('Should be string type')
     .isLength({max: 10, min: 3}).withMessage('Should be less than 10 and more than 3 symbols')
     .matches(patternLogin).withMessage('Should be correct login with a-z/A-Z/0-9')
+    .custom(checkLogin).withMessage('The user with this login is already exist')
 
 export const passwordRegistrationValidation = body('password').trim()
     .notEmpty().withMessage(`Shouldn't be empty`)
