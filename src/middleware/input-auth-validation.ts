@@ -1,5 +1,7 @@
 import {body} from "express-validator"
 import {usersCollection} from "../repositories/db";
+import {usersRepository} from "../repositories/users-repository";
+import {authRepository} from "../repositories/auth-repository";
 
 export const loginOrEmailValidation = body('loginOrEmail').trim()
     .notEmpty().withMessage(`Shouldn't be empty`)
@@ -20,6 +22,20 @@ const checkEmail = async (email: string ) => {
     return true
 }
 
+const checkCode = async (code: string) => {
+    const foundUser = await authRepository.findByCode(code)
+    if(!foundUser) {
+        throw new Error('This code is wrong')
+    }
+    if(foundUser.emailConfirmation.confirmationCode !== code) {
+        throw new Error('This code is wrong')
+    }
+    if(foundUser.emailConfirmation.expirationDate < new Date()) {
+        throw new Error('This code is expired')
+    }
+    return true
+}
+
 export const loginRegistrationValidation = body('login').trim()
     .notEmpty().withMessage(`Shouldn't be empty`)
     .isString().withMessage('Should be string type')
@@ -36,3 +52,8 @@ export const emailRegistrationValidation = body('email').trim()
     .isString().withMessage('Should be string type')
     .matches(patternEmail).withMessage('Should be correct email')
     .custom(checkEmail).withMessage('The user with this email is already exist')
+
+export const codeValidation = body('code').trim()
+    .notEmpty().withMessage(`Shouldn't be empty`)
+    .isString().withMessage('Should be string type')
+    .custom(checkCode)

@@ -26,8 +26,7 @@ export const authService = {
             emailConfirmation: {
                 confirmationCode: v4(),
                 expirationDate: add(new Date(), {
-                    hours: 1,
-                    minutes: 1
+                    hours: 1
                 }),
                 isConfirmed: false
             }
@@ -36,5 +35,8 @@ export const authService = {
         const user = await usersRepository.createUserWithRegistration(createdUser)
         await emailManager.sendEmailConfirmation(user)
         return user
+    },
+    async confirmEmail(code: string) {
+        await authRepository.updateConfirmation(code)
     }
 }

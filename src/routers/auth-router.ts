@@ -1,12 +1,13 @@
 import {Router, Response, Request} from "express";
 import {
+    codeValidation,
     emailRegistrationValidation,
     loginOrEmailValidation, loginRegistrationValidation,
     passwordFromAuthValidation, passwordRegistrationValidation
 } from "../middleware/input-auth-validation";
 import {inputValidation} from "../middleware/input-validation";
 import {RequestWithBody} from "../models/types";
-import {LoginTypeInput} from "../models/auth-models";
+import {LoginTypeInput, RegistrationConfirmationType} from "../models/auth-models";
 import {HTTP_STATUSES} from "../constats/status";
 import {authService} from "../domain/auth-service";
 import {jwtService} from "../application/jwt-service";
@@ -19,22 +20,22 @@ authRouter.post('/login',
     loginOrEmailValidation,
     passwordFromAuthValidation,
     inputValidation,
-    async(req: RequestWithBody<LoginTypeInput>,
-          res: Response) => {
-    const user = await authService.checkCredentials(req.body.loginOrEmail, req.body.password)
-    if(user) {
-        const token = await jwtService.createJWT(user)
-        res.status(HTTP_STATUSES.OK_200).json(token)
-        return
-    }
-    res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
-})
+    async (req: RequestWithBody<LoginTypeInput>,
+           res: Response) => {
+        const user = await authService.checkCredentials(req.body.loginOrEmail, req.body.password)
+        if (user) {
+            const token = await jwtService.createJWT(user)
+            res.status(HTTP_STATUSES.OK_200).json(token)
+            return
+        }
+        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
+    })
 
 authRouter.get('/me',
     bearerAuth,
     async (req: Request, res: Response) => {
-    res.status(HTTP_STATUSES.OK_200).json(req.user)
-})
+        res.status(HTTP_STATUSES.OK_200).json(req.user)
+    })
 
 authRouter.post('/registration',
     loginRegistrationValidation,
@@ -43,5 +44,13 @@ authRouter.post('/registration',
     inputValidation,
     async (req: RequestWithBody<UsersTypeInput>, res: Response) => {
         await authService.createUser(req.body.login, req.body.email, req.body.password)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+    })
+
+authRouter.post('/registration-confirmation',
+    codeValidation,
+    inputValidation,
+    async (req: RequestWithBody<RegistrationConfirmationType>, res: Response) => {
+        await authService.confirmEmail(req.body.code)
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })
