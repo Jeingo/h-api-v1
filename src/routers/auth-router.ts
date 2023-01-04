@@ -42,5 +42,6 @@ authRouter.post('/registration',
     emailRegistrationValidation,
     inputValidation,
     async (req: RequestWithBody<UsersTypeInput>, res: Response) => {
-
+        await authService.createUser(req.body.login, req.body.email, req.body.password)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     })

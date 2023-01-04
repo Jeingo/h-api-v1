@@ -1,4 +1,4 @@
-import {UsersTypeOutput, UsersTypeToDB} from "../models/users-models";
+import {UsersRegistrationType, UsersTypeOutput, UsersTypeToDB} from "../models/users-models";
 import {usersCollection} from "./db";
 import {ObjectId} from "mongodb";
 
@@ -10,6 +10,16 @@ export const usersRepository = {
             login: createdUser.login,
             email: createdUser.email,
             createdAt: createdUser.createdAt
+        }
+    },
+    async createUserWithRegistration(createdUser: UsersTypeToDB): Promise<UsersRegistrationType> {
+        const res = await usersCollection.insertOne(createdUser)
+        return {
+            id: res.insertedId.toString(),
+            login: createdUser.login,
+            email: createdUser.email,
+            createdAt: createdUser.createdAt,
+            emailConfirmation: createdUser.emailConfirmation
         }
     },
     async deleteUser(id: string): Promise<boolean> {

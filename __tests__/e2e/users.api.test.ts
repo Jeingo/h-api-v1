@@ -56,7 +56,7 @@ const errorsMessage = {
     ]
 }
 
-describe('/blogs', () => {
+describe('/users', () => {
     beforeAll(async () => {
         await request(app).delete('/testing/all-data')
     })

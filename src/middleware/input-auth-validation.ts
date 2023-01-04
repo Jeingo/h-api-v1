@@ -14,7 +14,7 @@ const patternEmail = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/
 
 const checkEmail = async (email: string ) => {
     const foundEmail = await usersCollection.findOne({email: email})
-    if(!foundEmail) {
+    if(foundEmail) {
         throw new Error('Email is already exist')
     }
     return true

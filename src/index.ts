@@ -1,8 +1,6 @@
 import {runDb} from "./repositories/db"
 import {app} from "./app"
 import {settings} from "./settings/settings";
-import * as dotenv from "dotenv";
-dotenv.config()
 
 const PORT = settings.PORT
 

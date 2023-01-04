@@ -15,9 +15,26 @@ export type UsersTypeInput = {
 
 export type UsersTypeToDB = {
     login: string
+    email: string
     hash: string
+    createdAt: string
+    emailConfirmation: {
+        confirmationCode: string
+        expirationDate: Date
+        isConfirmed: boolean
+    }
+}
+
+export type UsersRegistrationType = {
+    id: string
+    login: string
     email: string
     createdAt: string
+    emailConfirmation: {
+        confirmationCode: string
+        expirationDate: Date
+        isConfirmed: boolean
+    }
 }
 
 export type UsersIdInDB = {
