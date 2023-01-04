@@ -1,6 +1,5 @@
 import {body} from "express-validator"
 import {usersCollection} from "../repositories/db";
-import {usersRepository} from "../repositories/users-repository";
 import {authRepository} from "../repositories/auth-repository";
 
 export const loginOrEmailValidation = body('loginOrEmail').trim()
@@ -36,6 +35,17 @@ const checkCode = async (code: string) => {
     return true
 }
 
+const checkEmailResending = async (email: string) => {
+    const foundUser = await authRepository.findByLoginOrEmail(email)
+    if(!foundUser) {
+        throw new Error('This email is wrong')
+    }
+    if(foundUser.emailConfirmation.isConfirmed === true) {
+        throw new Error('Account is already confirmed')
+    }
+    return true
+}
+
 export const loginRegistrationValidation = body('login').trim()
     .notEmpty().withMessage(`Shouldn't be empty`)
     .isString().withMessage('Should be string type')
@@ -57,3 +67,9 @@ export const codeValidation = body('code').trim()
     .notEmpty().withMessage(`Shouldn't be empty`)
     .isString().withMessage('Should be string type')
     .custom(checkCode)
+
+export const emailResendValidation = body('email').trim()
+    .notEmpty().withMessage(`Shouldn't be empty`)
+    .isString().withMessage('Should be string type')
+    .matches(patternEmail).withMessage('Should be correct email')
+    .custom(checkEmailResending).withMessage('The user with this email is already confirmed')

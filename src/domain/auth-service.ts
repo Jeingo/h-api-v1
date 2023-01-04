@@ -38,5 +38,9 @@ export const authService = {
     },
     async confirmEmail(code: string) {
         await authRepository.updateConfirmation(code)
+    },
+    async resendEmail(email: string) {
+        const user = await authRepository.findByLoginOrEmail(email)
+        await emailManager.sendEmailConfirmation(user)
     }
 }
