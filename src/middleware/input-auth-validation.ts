@@ -1,6 +1,5 @@
 import {body} from "express-validator"
 import {usersCollection} from "../repositories/db";
-import {usersRepository} from "../repositories/users-repository";
 import {authRepository} from "../repositories/auth-repository";
 
 export const loginOrEmailValidation = body('loginOrEmail').trim()
