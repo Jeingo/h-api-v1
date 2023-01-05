@@ -26,6 +26,10 @@ export const authRepository = {
         const res = await usersCollection.findOne({'emailConfirmation.confirmationCode': code})
         return getOutputUser(res)
     },
+    async findByEmail(email: string) {
+        const result = await usersCollection.findOne({'email': email})
+        return getOutputUser(result)
+    },
     async updateConfirmation(code: string) {
         const res = await usersCollection
             .updateOne({'emailConfirmation.confirmationCode': code}, {$set: {'emailConfirmation.isConfirmed': true}})

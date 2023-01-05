@@ -1,5 +1,6 @@
 import {body} from "express-validator"
 import {usersCollection} from "../repositories/db";
+import {usersRepository} from "../repositories/users-repository";
 import {authRepository} from "../repositories/auth-repository";
 
 export const loginOrEmailValidation = body('loginOrEmail').trim()
@@ -21,14 +22,6 @@ const checkEmail = async (email: string ) => {
     return true
 }
 
-const checkLogin = async (login: string ) => {
-    const foundLogin = await usersCollection.findOne({login: login})
-    if(foundLogin) {
-        throw new Error('Email is already exist')
-    }
-    return true
-}
-
 const checkCode = async (code: string) => {
     const foundUser = await authRepository.findByCode(code)
     if(!foundUser) {
@@ -44,7 +37,7 @@ const checkCode = async (code: string) => {
 }
 
 const checkEmailResending = async (email: string) => {
-    const foundUser = await authRepository.findByLoginOrEmail(email)
+    const foundUser = await authRepository.findByEmail(email)
     if(!foundUser) {
         throw new Error('This email is wrong')
     }
@@ -59,7 +52,6 @@ export const loginRegistrationValidation = body('login').trim()
     .isString().withMessage('Should be string type')
     .isLength({max: 10, min: 3}).withMessage('Should be less than 10 and more than 3 symbols')
     .matches(patternLogin).withMessage('Should be correct login with a-z/A-Z/0-9')
-    .custom(checkLogin).withMessage('The user with this login is already exist')
 
 export const passwordRegistrationValidation = body('password').trim()
     .notEmpty().withMessage(`Shouldn't be empty`)
